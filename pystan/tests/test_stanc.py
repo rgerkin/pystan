@@ -38,3 +38,21 @@ class TestStanc(unittest.TestCase):
             stanc(model_code=model_code)
         with assertRaisesRegex(ValueError, 'EXPECTED: ";" BUT FOUND'):
             StanModel(model_code=model_code)
+
+    def test_stanc_error_msg(self):
+        model_code = """
+        transformed parameters {
+            vector[10000] alpha;
+            vector[10000] beta;
+            vector[10000] gamma;
+            alpha <- rep_vector(0, 10000);
+            beta <- rep_vector(0, 10000);
+            gamma <- rep_vector(0, 10000);
+        }"""
+        # this was breaking on some unicode decode error on xff, must fix
+        assertRaisesRegex = self.assertRaisesRegexp if PY2 else self.assertRaisesRegex
+        with assertRaisesRegex(ValueError, 'EXPECTED: ";" BUT FOUND'):
+            stanc(model_code=model_code)
+        with assertRaisesRegex(ValueError, 'EXPECTED: ";" BUT FOUND'):
+            StanModel(model_code=model_code)
+

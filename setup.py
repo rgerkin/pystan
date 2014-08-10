@@ -90,7 +90,7 @@ if len(set(('develop', 'release', 'bdist_egg', 'bdist_rpm',
         include_package_data=True,
     )
 else:
-    extra_setuptools_args = dict()
+    extra_setuptools_args = dict(zip_safe=False)
 
 ###############################################################################
 

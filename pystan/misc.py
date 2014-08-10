@@ -60,8 +60,8 @@ def _print_stanfit(fit, pars=None, probs=(0.025, 0.25, 0.5, 0.75, 0.975), digits
             pars = fit.sim['pars_oi']
             fnames = fit.sim['fnames_oi']
         else:
-            # FIXME: does this case ever occur?
-            # need a way of getting fnames matching specified pars
+            # occurs if user wants a summary of only certain parameters
+            # FIXME: need a way of getting fnames matching specified pars
             raise NotImplementedError
 
         n_kept = [s - w for s, w in zip(fit.sim['n_save'], fit.sim['warmup2'])]
