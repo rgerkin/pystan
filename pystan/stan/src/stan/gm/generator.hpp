@@ -1,5 +1,5 @@
-#ifndef __STAN__GM__GENERATOR_HPP__
-#define __STAN__GM__GENERATOR_HPP__
+#ifndef STAN__GM__GENERATOR_HPP
+#define STAN__GM__GENERATOR_HPP
 
 #include <boost/variant/apply_visitor.hpp>
 #include <boost/lexical_cast.hpp>
@@ -1639,6 +1639,18 @@ namespace stan {
         o_ << "*pstream__ << std::endl;" << EOL;
         generate_indent(indent_,o_);
         o_ << '}' << EOL;
+      }
+      void operator()(const raise_exception_statement& ps) const {
+        generate_indent(indent_,o_);
+        o_ << "std::stringstream errmsg_stream__;" << EOL;
+        for (size_t i = 0; i < ps.printables_.size(); ++i) {
+          generate_indent(indent_,o_);
+          o_ << "errmsg_stream__ << ";
+          generate_printable(ps.printables_[i],o_);
+          o_ << ";" << EOL;
+        }
+        generate_indent(indent_,o_);
+        o_ << "throw std::domain_error(errmsg_stream__.str());" << EOL;
       }
       void operator()(const return_statement& rs) const {
         generate_indent(indent_,o_);
