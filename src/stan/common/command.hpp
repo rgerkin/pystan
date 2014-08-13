@@ -1,5 +1,5 @@
-#ifndef __STAN__COMMON__COMMAND_HPP__
-#define __STAN__COMMON__COMMAND_HPP__
+#ifndef STAN__COMMON__COMMAND_HPP
+#define STAN__COMMON__COMMAND_HPP
 
 #include <fstream>
 #include <stdexcept>
@@ -432,6 +432,7 @@ namespace stan {
           }
           return_code = stan::gm::error_codes::OK;
         } else if (algo->value() == "bfgs") {
+          NoOpFunctor callback;
           typedef stan::optimization::BFGSLineSearch<Model,stan::optimization::BFGSUpdate_HInv<> > Optimizer;
           Optimizer bfgs(model, cont_vector, disc_vector, &std::cout);
 
@@ -452,8 +453,10 @@ namespace stan {
           return_code = do_bfgs_optimize(model,bfgs, base_rng,
                                          lp, cont_vector, disc_vector,
                                          output_stream, &std::cout, 
-                                         save_iterations, refresh);
+                                         save_iterations, refresh,
+                                         callback);
         } else if (algo->value() == "lbfgs") {
+          NoOpFunctor callback;
           typedef stan::optimization::BFGSLineSearch<Model,stan::optimization::LBFGSUpdate<> > Optimizer;
           Optimizer bfgs(model, cont_vector, disc_vector, &std::cout);
 
@@ -476,7 +479,8 @@ namespace stan {
           return_code = do_bfgs_optimize(model,bfgs, base_rng,
                                          lp, cont_vector, disc_vector,
                                          output_stream, &std::cout, 
-                                         save_iterations, refresh);
+                                         save_iterations, refresh,
+                                         callback);
         } else {
           return_code = stan::gm::error_codes::CONFIG;
         }
