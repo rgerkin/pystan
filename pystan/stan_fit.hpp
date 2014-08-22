@@ -14,7 +14,6 @@
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/random/additive_combine.hpp> // L'Ecuyer RNG
 #include <boost/random/uniform_real_distribution.hpp>
-#include <boost/format.hpp>
 
 #include <stan/model/util.hpp>
 
