@@ -42,10 +42,10 @@ dependencies, then issue the commands:
 
 ::
 
-   wget https://github.com/stan-dev/pystan/archive/v2.4.0.3.zip
+   wget https://github.com/stan-dev/pystan/archive/v2.5.0.0.zip
    # alternatively, use curl, or a web browser
-   unzip v2.4.0.3.zip
-   cd pystan-2.4.0.3
+   unzip v2.5.0.0.zip
+   cd pystan-2.5.0.0
    python setup.py install
    cd ..  # change out of the source directory before importing pystan
 
@@ -111,7 +111,7 @@ the sampler will run more efficiently.
 
 In PyStan, we can also specify the Stan model using a file. For example, we can
 download the file `8schools.stan
-<http://wiki.stan.googlecode.com/git/rstangettingstarted/8schools.stan>`_ into
+<https://raw.githubusercontent.com/stan-dev/pystan/develop/pystan/stan/src/models/misc/eight_schools/eight_schools.stan>`_ into
 our working directory and use the following call to ``stan`` instead:
 
 .. code-block:: python

@@ -63,26 +63,6 @@ cdef extern from "$model_cppname.hpp" namespace "${model_cppname}_namespace":
 ctypedef map[string, pair[vector[double], vector[size_t]]] vars_r_t
 ctypedef map[string, pair[vector[int], vector[size_t]]] vars_i_t
 
-cdef dict _dict_from_stanholder(StanHolder* holder):
-    r = {}
-    r['num_failed'] = holder.num_failed
-    r['test_grad'] = holder.test_grad
-    r['inits'] = holder.inits
-    r['par'] = holder.par
-    r['value'] = holder.value
-    chains = [np.asarray(ch) for ch in holder.chains]
-    chain_names = [n.decode('utf-8') for n in holder.chain_names]
-    r['chains'] = collections.OrderedDict(zip(chain_names, chains))
-    # NOTE: when _dict_from_stanholder is called we also have a pointer
-    # to holder.args available so we will use it directly
-    # r['args'] = _dict_from_stanargs(holder.args)
-    r['mean_pars'] = holder.mean_pars
-    r['mean_lp__'] = holder.mean_lp__
-    cdef bytes adaptation_info_bytes = holder.adaptation_info
-    r['adaptation_info'] = adaptation_info_bytes.decode('utf-8')
-    r['sampler_params'] = holder.sampler_params
-    r['sampler_param_names'] = [n.decode('utf-8') for n in holder.sampler_param_names]
-    return r
 
 cdef class PyStanHolder:
     """Allow access to a StanHolder instance from Python
@@ -446,6 +426,20 @@ cdef class StanFit4$model_cppname:
 
     def __dealloc__(self):
         del self.thisptr
+
+    # the following three methods give Cython classes instructions for pickling
+    def __getstate__(self):
+        attr_names = ('data sim model_name model_pars par_dims mode inits stan_args '
+                      'stanmodel date').split()
+        state = dict((k, getattr(self, k)) for k in attr_names)
+        return state
+
+    def __setstate__(self, state):
+        for k in state:
+            setattr(self, k, state[k])
+
+    def __reduce__(self):
+        return (StanFit4$model_cppname, (self.data,), self.__getstate__(), None, None)
 
     # public methods
 

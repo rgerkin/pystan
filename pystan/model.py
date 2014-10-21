@@ -447,19 +447,17 @@ class StanModel:
         save_iterations : bool, optional
         refresh : int, optional
         init_alpha : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 0.001
+            For BFGS and LBFGS, see (Cmd)Stan manual. Default is 0.001
         tol_obj : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 1e-12.
+            For BFGS and LBFGS, see (Cmd)Stan manual. Default is 1e-12.
         tol_grad : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 1e-8.
+            For BFGS and LBFGS, see (Cmd)Stan manual. Default is 1e-8.
         tol_param : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 1e-8.
+            For BFGS and LBFGS, see (Cmd)Stan manual. Default is 1e-8.
         tol_rel_grad : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 1e4.
-        tol_rel_param : float, optional
-            For BFGS and LBFGS, see Stan manual. Default is 1e7.
+            For BFGS and LBFGS, see (Cmd)Stan manual. Default is 1e7.
         history_size : int, optional
-            For LBFGS, see Stan manual. Default is 5.
+            For LBFGS, see (Cmd)Stan manual. Default is 5.
 
         Examples
         --------
@@ -501,6 +499,14 @@ class StanModel:
                          algorithm=algorithm)
         if sample_file is not None:
             stan_args['sample_file'] = pystan.misc._writable_sample_file(sample_file)
+
+        # check that arguments in kwargs are valid
+        valid_args = {"iter", "save_iterations", "save_iterations", "refresh",
+                      "init_alpha", "tol_obj", "tol_grad", "tol_param",
+                      "tol_rel_obj", "tol_rel_grad", "history_size"}
+        for arg in kwargs:
+            if arg not in valid_args:
+                raise ValueError("Parameter `{}` is not recognized.".format(arg))
 
         # This check is is to warn users of older versions of PyStan
         if kwargs.get('method'):
@@ -685,6 +691,12 @@ class StanModel:
             raise ValueError("The number of chains is less than one; sampling"
                              "not done.")
 
+        # check that arguments in kwargs are valid
+        valid_args = {"chain_id", "init_r", "test_grad", "append_samples", "refresh", "control"}
+        for arg in kwargs:
+            if arg not in valid_args:
+                raise ValueError("Parameter `{}` is not recognized.".format(arg))
+
         args_list = pystan.misc._config_argss(chains=chains, iter=iter,
                                               warmup=warmup, thin=thin,
                                               init=init, seed=seed, sample_file=sample_file,
@@ -699,6 +711,10 @@ class StanModel:
 
         if n_jobs is None:
             n_jobs = -1
+
+        # disable multiprocessing if we only have a single chain
+        if chains == 1:
+            n_jobs = 1
 
         assert len(args_list) == chains
         call_sampler_args = izip(itertools.repeat(data), args_list)
